@@ -25,7 +25,9 @@ namespace B_Analysis_BackEnd.Migrations // Adjust namespace as needed
                     BlueAttackerId = table.Column<long>(nullable: true),
                     MatchDuration = table.Column<int>(nullable: false),
                     BallPositionSerialized = table.Column<string>(nullable: true),
-                    BallSpeedSerialized = table.Column<string>(nullable: true)
+                    BallSpeedSerialized = table.Column<string>(nullable: true),
+                    FrameRate = table.Column<int>(nullable: true),
+                    PredictedGoalsSerialized = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

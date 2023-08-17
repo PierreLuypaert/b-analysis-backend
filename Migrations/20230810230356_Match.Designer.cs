@@ -41,6 +41,10 @@ namespace B_Analysis_BackEnd.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PredictedGoalsSerialized")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<long>("BlueAttackerId")
                         .HasColumnType("bigint");
 
@@ -51,6 +55,9 @@ namespace B_Analysis_BackEnd.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MatchDuration")
+                        .HasColumnType("integer");
+                    
+                    b.Property<int>("FrameRate")
                         .HasColumnType("integer");
 
                     b.Property<string>("Name")

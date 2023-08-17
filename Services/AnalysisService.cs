@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using B_Analysis_BackEnd.Models;
-using System.Text.Json; 
+using System.Text.Json;
+using B_Analysis_BackEnd.DTOs;
+using Newtonsoft.Json;
 
 namespace B_Analysis_BackEnd.Services
 {
     public interface IAnalysisService
     {
-        Task<Match> GetMatchAnalysis();
+        Task<Match> GetMatchAnalysis(Match match);
     }
 
     public class AnalysisService : IAnalysisService
@@ -20,30 +23,44 @@ namespace B_Analysis_BackEnd.Services
             _httpClient = httpClient;
         }
 
-        public async Task<Match> GetMatchAnalysis()
+        public async Task<Match> GetMatchAnalysis(Match match)
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                // Replace "http://localhost:5000" with the actual URL of your local API.
-                HttpResponseMessage response = await _httpClient.GetAsync("http://localhost:5000/match-analysis");
+                // Prepare the request payload (if needed)
+                var payload = new
+                {
+                    VideoUrl = match.VideoUrl
+                };
 
-                if (response.IsSuccessStatusCode)
+                // Serialize the payload to JSON
+                string jsonPayload = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                try
                 {
-                    string jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Deserialize the JSON response using System.Text.Json.JsonSerializer.
-                    Match apiResponse = JsonSerializer.Deserialize<Match>(jsonResponse);
-                    return apiResponse;
+                    // Send the POST request and get the response
+                    HttpResponseMessage response = await client.PostAsync("http://localhost:5000/match-analysis", content);
+                    response.EnsureSuccessStatusCode(); // Throws if response status code is not successful
+
+                    // Deserialize the response content to the desired object type (Match)
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    MatchAnalysisDTO analysisData = JsonConvert.DeserializeObject<MatchAnalysisDTO>(responseContent);
+
+                    match.BallSpeed = analysisData.BallSpeed;
+                    match.BallPosition = analysisData.BallPosition;
+                    match.MatchDuration = analysisData.MatchDuration;
+
+                    return match;
                 }
-                else
+                catch (HttpRequestException ex)
                 {
-                    // You can handle different HTTP status codes here if needed.
-                    throw new Exception($"API call failed with status code: {response.StatusCode}");
+                    // Handle network-related errors
+                        Console.WriteLine($"HTTP request error: {ex.Message}");
+                    throw;
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An error occurred: {ex.Message}");
             }
         }
+
     }
 }

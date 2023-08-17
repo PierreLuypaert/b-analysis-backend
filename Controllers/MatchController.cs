@@ -11,10 +11,12 @@ namespace B_Analysis_BackEnd.Controllers
     public class MatchController : ControllerBase
     {
         private readonly IMatchService _matchService;
+        private readonly IAnalysisService _analysisService;
 
-        public MatchController(IMatchService matchService)
+        public MatchController(IMatchService matchService, IAnalysisService analysisService)
         {
             _matchService = matchService;
+            _analysisService = analysisService;
         }
         
         [HttpGet("all")]
@@ -32,10 +34,12 @@ namespace B_Analysis_BackEnd.Controllers
         }
         
         [HttpPost("create")]
-        public IActionResult CreatePlayer([FromBody] Match match)
+        public async Task<IActionResult> CreateMatch([FromBody] Match match)
         {
             try
             {
+                match.Date = DateTime.UtcNow;
+                match = await _analysisService.GetMatchAnalysis(match);
                 _matchService.AddMatch(match);
                 return Ok("Match created successfully");
             }

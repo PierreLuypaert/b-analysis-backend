@@ -38,6 +38,10 @@ namespace B_Analysis_BackEnd.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PredictedGoalsSerialized")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<long>("BlueAttackerId")
                         .HasColumnType("bigint");
 
@@ -72,6 +76,9 @@ namespace B_Analysis_BackEnd.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("scoreRed")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FrameRate")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
