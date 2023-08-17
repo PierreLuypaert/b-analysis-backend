@@ -26,6 +26,7 @@ namespace B_Analysis_BackEnd.Repository
                 .Include(m => m.BlueAttacker)
                 .Include(m => m.RedDefender)
                 .Include(m => m.RedAttacker)
+                .OrderByDescending(m => m.Date)
                 .ToList();
         }
 
